@@ -1,0 +1,28 @@
+ref 0 gnd
+
+var Cx 0.000000005
+var Lx 10
+var Rx 10000
+
+#freq 50
+#comp 0 1 R 100
+#comp 1 gnd L 0.2
+# Z 73k phi -43
+
+#freq 300
+#comp 0 gnd R 100000
+#comp 0 gnd C 0.000000005
+# Z 118 phi 32
+
+freq 300
+comp 0 1 R Rx
+comp 1 gnd C Cx
+comp 1 2 L Lx
+comp 1 4 L Lx
+comp 2 gnd R Rx
+comp 2 3 R Rx
+comp 2 3 L Lx
+comp 2 4 C Cx
+comp 3 gnd C Cx
+comp 3 4 R Rx
+comp 4 gnd R Rx
