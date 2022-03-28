@@ -95,7 +95,7 @@ class Network:
                             #variable
                             else:
                                 value = self.variables[args[4]]
-                            self.addComponent(args[1], args[2], Component(args[3], value))
+                            self.addComponent(args[1], args[2], Component(args[1]+"_"+args[2], args[3], value))
 
         # Validate the network
         # 1. validate that there is atleast one path between the references
@@ -109,7 +109,7 @@ class Network:
     '''
     def generateAdditionalInformation(self):
          # Calculate depth
-        self.nodes_ref[0].calculateNodesDepth(self.nodes_ref[1], 0)
+        self.nodes_ref[0].calculateNodesDepth(self.nodes_ref[1])
         self.nodes_sorted_levels = list(self.nodes_table.values())
         self.nodes_sorted_levels.sort(key=cmp_to_key(lambda item1, item2: item1.getDepthScore() - item2.getDepthScore()))
 
@@ -132,7 +132,7 @@ class Network:
 
     # Print contents of network
     def printContents(self):
-        log("########## Printing Network #############")
+        log("########## Network Analyzer #############")
         log("Name: %s"%(self.networkname))
         log("Ref. Nodes: [%s->%s]"%(str(self.nodes_ref[0]),str(self.nodes_ref[1])))
         log("Frequency[Hz]: %f"%(self.frequency))
@@ -144,4 +144,5 @@ class Network:
                 parallel_comps = ""
                 for comp in  node.components[c]:
                     parallel_comps = parallel_comps +comp.identifier + " "
-                log(" *%d.[%-3s->%-3s] {%-s} Z[Ohm]: %-10f\tPhi[Deg]: %-f "%(node.depthscore, node.name, c, parallel_comps,node.impedance[c],node.phaseshift[c]))
+                log(" *%d.[%-3s->%-3s]  Z[Ohm]: %-15f\tPhi[Deg]: %-f "%(node.depthscore, node.name, c, node.impedance[c],node.phaseshift[c]))
+                log(" %-s"%parallel_comps)

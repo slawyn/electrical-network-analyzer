@@ -63,7 +63,7 @@ class Node:
         return self.name
 
     # Put all nodes on the level
-    def calculateNodesDepth(self, endnode, depthcounter):
+    def calculateNodesDepth(self, endnode, depthcounter=1):
         for nxt in self.next:
             if depthcounter>nxt.depthscore:
                 nxt.depthscore =depthcounter

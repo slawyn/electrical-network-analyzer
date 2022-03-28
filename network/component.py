@@ -4,14 +4,14 @@ class Component():
     TYPES = ["R","C","L"]
     COUNTERS = [0,0,0]
 
-    def __init__(self, type, parameter):
+    def __init__(self, prefix, type, parameter):
         self.parameter = parameter
         self.type = type
 
         # Increment the components counter
         idx = Component.TYPES.index(type)
         if idx>=0:
-            self.identifier = type + str(Component.COUNTERS[idx])
+            self.identifier = type + str(Component.COUNTERS[idx])+"{"+prefix +"}" 
             Component.COUNTERS[idx]+=1
         else:
             raise ValueError("Error:Unknown component type")

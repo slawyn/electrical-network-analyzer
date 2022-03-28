@@ -1,6 +1,6 @@
 from helpers import log
 from network.component import Component
-from drawer.polygons import DrawElement
+from drawer.elements import DrawElement
 
 #external dependencies
 import os
@@ -42,6 +42,8 @@ class NetworkDrawer():
     '''
     def drawNetwork(self):
 
+        #self.generateTestMap0()
+        log("########## Network Drawer #############")
         # find the right scale for the network x
         count_available_x = (NetworkDrawer.CANVAS_SIZE_X-NetworkDrawer.COMPONENT_SIZE*2)/NetworkDrawer.COMPONENT_SIZE
         count_available_y = (NetworkDrawer.CANVAS_SIZE_Y-NetworkDrawer.COMPONENT_SIZE*2)/NetworkDrawer.COMPONENT_SIZE
@@ -49,30 +51,67 @@ class NetworkDrawer():
         # Calculate longest path
         nodes = self.network.getSortedNodes()
 
+        # save graphical connections
+        conn_sources = {}
+        conn_destinations = {}
+        for node in nodes:
+            conn_destinations[node.name] = []
+
         # Generate components
         source = NetworkDrawer.OFFSET_START
-        for node in nodes:
-            for c in node.components:
-                len_comps = len(node.components[c])
-                if (len_comps>0):
-                    element = None
-                    y = source[1] -(len_comps* NetworkDrawer.COMPONENT_SIZE)/2
-                    source = (source[0]+ NetworkDrawer.COMPONENT_SIZE, source[1])
-                    for comp in node.components[c]:
-                        element = DrawElement(( source[0],y ), NetworkDrawer.COMPONENT_SIZE, 0, self.scale, comp.getType())
-                        self.addToMap(element)
-                        y += NetworkDrawer.COMPONENT_SIZE
+        for snode in nodes:
+            len_comps = len(snode.components)
+
+            # Node
+            element_start = (source[0] + NetworkDrawer.COMPONENT_SIZE + NetworkDrawer.COMPONENT_SIZE/2, source[1])
+            e = DrawElement( element_start, NetworkDrawer.COMPONENT_SIZE, 0, self.scale, "N")
+            e.setText(snode.name)
+            self.addToMap(e)
+
+            # collect connections
+            conn_sources[snode.name] = element_start
+
+            # Positions
+            y = source[1] - ((len_comps-1) * NetworkDrawer.COMPONENT_SIZE)
+            source = (source[0]+ NetworkDrawer.COMPONENT_SIZE*2, source[1])
+
+            # Components
+            for tnode in snode.components:
+                for comp in snode.components[tnode]:
+
+                    # element
+                    e_start =  (source[0], y)
+                    e_end = (source[0] + NetworkDrawer.COMPONENT_SIZE, y)
+                    e = DrawElement(e_start, NetworkDrawer.COMPONENT_SIZE, 0, self.scale, comp.getType())
+                    e.setText(comp.identifier)
+                    self.addToMap(e)
+
+                    # nodes
+                    try:
+                        conn_destinations[snode.name].append(e_start)
+                        conn_destinations[tnode].append(e_end)
+                    except:
+                        raise ValueError("Error: Network is not valid. Path between references has not been defined.")
+
+                    y += NetworkDrawer.COMPONENT_SIZE
 
 
+        log("Elements:")
+        for xy in self.map:
+            for element in self.map[xy]:
+                log("[%s] %s"%(element.getType(),element.getStart()))
 
-        # Draw components first
+        # Connections
+        log("Connections:")
+        for n in conn_sources:
+            log("[%s]%s->%s"%(n, conn_sources[n], str(conn_destinations[n])))
 
         # Draw connections
-
-        # Draw
-        #self.generateTestMap0()
         self.drawMap()
         self.showInPanel()
+
+    def drawPathBetweenPoints(source, destination):
+        pass
 
     def generateTestMap0(self):
         source = NetworkDrawer.OFFSET_START
