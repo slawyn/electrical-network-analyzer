@@ -1,10 +1,10 @@
-from helpers import log, cmp, readfile, getfilename
-from network.component import Component
-from network.node import Node
-
-#external dependencies
 import math
 from functools import cmp_to_key
+
+from analyzer.helpers import log, cmp, readfile, getfilename
+from analyzer.network.component import Component
+from analyzer.network.node import Node
+
 
 class Network:
     def __init__(self, filepath):
@@ -50,7 +50,7 @@ class Network:
 
         if source != None and sink != None:
             source.addComponentBetweenNodes(sink, component)
-        elif source!=None:
+        elif source != None:
             source.addComponentBetweenNodes(self.createNode(endnode), component)
 
         # Create both
@@ -66,7 +66,7 @@ class Network:
         # read file
         for line in readfile(filepath):
             args = line.split()
-            if len(args)>0:
+            if len(args) > 0:
                 if '#' not in args[0]:  # lines with # are commented out
                     if args[0] == "freq":
                         freq = float(args[1])
@@ -74,7 +74,7 @@ class Network:
                             log("Warning. Frequency cannot be 0. Setting it to 1")
                         self.frequency = freq
                     elif args[0] == "var":
-                        name  = args[1]
+                        name = args[1]
                         value = float(args[2])
                         self.variables[name] = value
 
@@ -87,12 +87,13 @@ class Network:
 
                     elif args[0] == "comp":
                         if args[1] == args[2]:
-                            log("Warning. Component %s on node %s is shorted to self and will be removed."%(args[3], args[1]))
+                            log("Warning. Component %s on node %s is shorted to self and will be removed." %
+                                (args[3], args[1]))
                         else:
                             value = 0
                             if args[4].isnumeric():
                                 value = float(args[4])
-                            #variable
+                            # variable
                             else:
                                 value = self.variables[args[4]]
                             self.addComponent(args[1], args[2], Component(args[1]+"_"+args[2], args[3], value))
@@ -104,11 +105,8 @@ class Network:
 
         self.generateAdditionalInformation()
 
-    '''
-    Additional post processing of the structure
-    '''
     def generateAdditionalInformation(self):
-         # Calculate depth
+        # Calculate depth
         self.nodes_ref[0].calculateNodesDepth(self.nodes_ref[1])
         self.nodes_sorted_levels = list(self.nodes_table.values())
         self.nodes_sorted_levels.sort(key=cmp_to_key(lambda item1, item2: item1.getDepthScore() - item2.getDepthScore()))
@@ -120,8 +118,8 @@ class Network:
         path = self.nodes_ref[0].findLongestPathToNode(self.nodes_ref[1])
         ostring = self.nodes_ref[0].getName()+"->"
         for p in path:
-            ostring+=p.getName()+"->"
-        ostring +=self.nodes_ref[1].getName()
+            ostring += p.getName()+"->"
+        ostring += self.nodes_ref[1].getName()
         return ostring
 
     def getNetworkName(self):
@@ -133,16 +131,17 @@ class Network:
     # Print contents of network
     def printContents(self):
         log("########## Network Analyzer #############")
-        log("Name: %s"%(self.networkname))
-        log("Ref. Nodes: [%s->%s]"%(str(self.nodes_ref[0]),str(self.nodes_ref[1])))
-        log("Frequency[Hz]: %f"%(self.frequency))
-        log("Variables: %s"%str(self.variables))
-        log("-Longestpath: [%s]"%(self.getLongestNetworkPath()))
+        log("Name: %s" % (self.networkname))
+        log("Ref. Nodes: [%s->%s]" % (str(self.nodes_ref[0]), str(self.nodes_ref[1])))
+        log("Frequency[Hz]: %f" % (self.frequency))
+        log("Variables: %s" % str(self.variables))
+        log("-Longestpath: [%s]" % (self.getLongestNetworkPath()))
         log("-Connections:level.[a->b]{components}")
         for node in self.nodes_sorted_levels:
             for c in node.components:
                 parallel_comps = ""
-                for comp in  node.components[c]:
-                    parallel_comps = parallel_comps +comp.identifier + " "
-                log(" *%d.[%-3s->%-3s]  Z[Ohm]: %-15f\tPhi[Deg]: %-f "%(node.depthscore, node.name, c, node.impedance[c],node.phaseshift[c]))
-                log(" %-s"%parallel_comps)
+                for comp in node.components[c]:
+                    parallel_comps = parallel_comps + comp.identifier + " "
+                log(" *%d.[%-3s->%-3s]  Z[Ohm]: %-15f\tPhi[Deg]: %-f " %
+                    (node.depthscore, node.name, c, node.impedance[c], node.phaseshift[c]))
+                log(" %-s" % parallel_comps)

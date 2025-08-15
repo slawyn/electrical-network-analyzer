@@ -1,5 +1,6 @@
 import math
-from network.component import Component
+from analyzer.network.component import Component
+
 
 def rotatePolygon(polygons, x_pos, y_pos, degrees):
     """ Rotate polygon the given angle about its center. """
@@ -12,9 +13,9 @@ def rotatePolygon(polygons, x_pos, y_pos, degrees):
     cy = 0
     for shape in polygons:
         for p in shape:
-            cx +=p[0]
-            cy +=p[1]
-            n +=1
+            cx += p[0]
+            cy += p[1]
+            n += 1
 
     if n == 0:
         n = 1
@@ -28,7 +29,7 @@ def rotatePolygon(polygons, x_pos, y_pos, degrees):
         for p in shape:
             x, y = p[0], p[1]
             tx, ty = x-cx, y-cy
-            new_x = ( tx*cosang + ty*sinang) + cx
+            new_x = (tx*cosang + ty*sinang) + cx
             new_y = (-tx*sinang + ty*cosang) + cy
             new_shape.append((new_x+x_pos, new_y+y_pos))
         new_polygons.append(new_shape)
@@ -40,7 +41,7 @@ class DrawElement:
         self.x = source[0]
         self.y = source[1]
         self.size = size
-        self.wirethickness = size *0.02
+        self.wirethickness = size * 0.02
         self.type = type
         self.angle = angle
         self.text = text
@@ -48,30 +49,35 @@ class DrawElement:
     '''
     Get Type
     '''
+
     def getType(self):
         return self.type
 
     '''
     Get Text
     '''
+
     def getText(self):
         return self.text
 
     '''
     Set Text
     '''
+
     def setText(self, text):
         self.text = text
 
     '''
     Get start position of the component
     '''
+
     def getStart(self):
         return (self.x, self.y)
 
     '''
     Get end position of the component
     '''
+
     def getEnd(self):
         hsize = 0
         vsize = 0
@@ -86,6 +92,7 @@ class DrawElement:
     '''
     Get polygons
     '''
+
     def getPolygons(self):
         # Calculate wire points
         polygons = []
