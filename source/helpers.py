@@ -1,21 +1,15 @@
 import datetime
 import os
 
-'''
-Log function
-'''
-def log(s):
-    print("%s ## %s"%(datetime.datetime.now().time(),s))
 
-'''
-String Compare function
-'''
+def log(s):
+    print("%s ## %s" % (datetime.datetime.now().time(), s))
+
+
 def cmp(a, b):
     return (a > b) - (a < b)
 
-'''
-Read file into a buffer of lines
-'''
+
 def readfile(filepath):
     lines = None
     with open(filepath) as f:
@@ -23,9 +17,7 @@ def readfile(filepath):
 
     return lines
 
-'''
-Get name of the file from the filepath
-'''
+
 def getfilename(filepath):
-    base=os.path.basename(filepath)
+    base = os.path.basename(filepath)
     return os.path.splitext(base)[0]
